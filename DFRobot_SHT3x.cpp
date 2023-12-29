@@ -18,8 +18,10 @@ DFRobot_SHT3x::DFRobot_SHT3x(TwoWire *pWire, uint8_t address,uint8_t RST)
   _address = address;
   _RST = RST;
   measurementMode = eOneShot;
-  pinMode(_RST,OUTPUT);
-  digitalWrite(_RST,HIGH);
+  if (_RST){
+	pinMode(_RST,OUTPUT);
+	digitalWrite(_RST,HIGH);
+  }
 }
 
 int DFRobot_SHT3x::begin() 
@@ -65,6 +67,8 @@ bool DFRobot_SHT3x::softReset()
 
 bool DFRobot_SHT3x::pinReset()
 {
+  if (_RST == 0)
+	return false;
   sStatusRegister_t registerRaw;
   clearStatusRegister();
   digitalWrite(_RST,LOW);
@@ -601,4 +605,46 @@ uint8_t DFRobot_SHT3x::readData(void *pBuf, size_t size) {
   }
 
   return len;
+}
+
+//boolean isFahrenheit: True == Fahrenheit; False == Celcius
+float DFRobot_SHT3x::computeDewPoint(float temperature, float percentHumidity, bool isFahrenheit)
+{
+	// reference: http://wahiduddin.net/calc/density_algorithms.htm
+	if (isFahrenheit)
+	{
+		temperature = toCelsius(temperature);
+	}
+	double calc_temp = 373.15 / (273.15 + (double)temperature);
+	double calc_sum = -7.90298 * (calc_temp - 1);
+	calc_sum += 5.02808 * log10(calc_temp);
+	calc_sum += -1.3816e-7 * (pow(10, (11.344 * (1 - 1 / calc_temp))) - 1);
+	calc_sum += 8.1328e-3 * (pow(10, (-3.49149 * (calc_temp - 1))) - 1);
+	calc_sum += log10(1013.246);
+	double calc_value = pow(10, calc_sum - 3) * (double)percentHumidity;
+	double calc_dew_temp = log(calc_value / 0.61078); // temp var
+	calc_dew_temp = (241.88 * calc_dew_temp) / (17.558 - calc_dew_temp);
+	return isFahrenheit ? toFahrenheit(calc_dew_temp) : calc_dew_temp;
+}
+
+float DFRobot_SHT3x::computeAbsoluteHumidity(float temperature, float percentHumidity, bool isFahrenheit)
+{
+	// Calculate the absolute humidity in g/m³
+	// https://carnotcycle.wordpress.com/2012/08/04/how-to-convert-relative-humidity-to-absolute-humidity/
+	if (isFahrenheit)
+	{
+		temperature = toCelsius(temperature);
+	}
+
+	float absHumidity;
+	float absTemperature;
+	absTemperature = temperature + 273.15;
+
+	absHumidity = 6.112;
+	absHumidity *= exp((17.67 * temperature) / (243.5 + temperature));
+	absHumidity *= percentHumidity;
+	absHumidity *= 2.1674;
+	absHumidity /= absTemperature;
+
+	return absHumidity;
 }
