@@ -1,3 +1,11 @@
+# Disable ResetPin
+Change default value for ResetPin to 0 so no DIO Pin 4 affectation if unused.
+If ResetPin set to 0, pinReset() function do nothing and return False.
+
+# Append 3 functions from https://github.com/beegee-tokyo/DHTesp
+float computeDewPoint(float temperature, float percentHumidity, bool isFahrenheit=false);
+float computeAbsoluteHumidity(float temperature, float percentHumidity, bool isFahrenheit=false);
+
 # DFRobot_SHT3x
 - [中文版](./README_CN.md)
 

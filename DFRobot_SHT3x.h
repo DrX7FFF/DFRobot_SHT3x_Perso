@@ -172,12 +172,12 @@ public:
    * @brief Construct the function
    * @param pWire IC bus pointer object and construction device, can both pass or not pass parameters, Wire in default.
    * @param address Chip IIC address, two optional addresses 0x44 and 0x45(0x45 in default).
-   * @param RST Chip reset pin, 4 in default.
+   * @param RST Chip reset pin, 0 in default. If 0 pinReset fucntion is disabled.
    * @n The IIC address is determined by the pin addr on the chip.
    * @n When the ADR is connected to VDD, the chip IIC address is 0x45.
    * @n When the ADR is connected to GND, the chip IIC address is 0x44.
    */
-  DFRobot_SHT3x(TwoWire *pWire = &Wire, uint8_t address = 0x45,uint8_t RST = 4);
+  DFRobot_SHT3x(TwoWire *pWire = &Wire, uint8_t address = 0x45,uint8_t RST = 0);
   
   /**
    * @fn readSerialNumber
@@ -451,6 +451,12 @@ public:
    * @return Return the low humidity alarm point
    */
   float getHumidityLowSetRH();
+
+  /* Append from https://github.com/beegee-tokyo/DHTesp*/
+  static float toCelsius(float fromFahrenheit) { return (fromFahrenheit - 32.0) / 1.8; };
+  float computeDewPoint(float temperature, float percentHumidity, bool isFahrenheit=false);
+  float computeAbsoluteHumidity(float temperature, float percentHumidity, bool isFahrenheit=false);
+
 
 private:
 
