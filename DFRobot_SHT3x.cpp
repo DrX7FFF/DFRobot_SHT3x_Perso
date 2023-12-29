@@ -607,14 +607,9 @@ uint8_t DFRobot_SHT3x::readData(void *pBuf, size_t size) {
   return len;
 }
 
-//boolean isFahrenheit: True == Fahrenheit; False == Celcius
-float DFRobot_SHT3x::computeDewPoint(float temperature, float percentHumidity, bool isFahrenheit)
+float DFRobot_SHT3x::computeDewPoint(float temperature, float percentHumidity)
 {
 	// reference: http://wahiduddin.net/calc/density_algorithms.htm
-	if (isFahrenheit)
-	{
-		temperature = toCelsius(temperature);
-	}
 	double calc_temp = 373.15 / (273.15 + (double)temperature);
 	double calc_sum = -7.90298 * (calc_temp - 1);
 	calc_sum += 5.02808 * log10(calc_temp);
@@ -624,18 +619,13 @@ float DFRobot_SHT3x::computeDewPoint(float temperature, float percentHumidity, b
 	double calc_value = pow(10, calc_sum - 3) * (double)percentHumidity;
 	double calc_dew_temp = log(calc_value / 0.61078); // temp var
 	calc_dew_temp = (241.88 * calc_dew_temp) / (17.558 - calc_dew_temp);
-	return isFahrenheit ? toFahrenheit(calc_dew_temp) : calc_dew_temp;
+	return calc_dew_temp;
 }
 
-float DFRobot_SHT3x::computeAbsoluteHumidity(float temperature, float percentHumidity, bool isFahrenheit)
+float DFRobot_SHT3x::computeAbsoluteHumidity(float temperature, float percentHumidity)
 {
 	// Calculate the absolute humidity in g/m³
 	// https://carnotcycle.wordpress.com/2012/08/04/how-to-convert-relative-humidity-to-absolute-humidity/
-	if (isFahrenheit)
-	{
-		temperature = toCelsius(temperature);
-	}
-
 	float absHumidity;
 	float absTemperature;
 	absTemperature = temperature + 273.15;
