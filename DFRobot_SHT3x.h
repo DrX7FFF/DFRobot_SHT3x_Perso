@@ -454,8 +454,8 @@ public:
 
   /* Append from https://github.com/beegee-tokyo/DHTesp*/
   static float toCelsius(float fromFahrenheit) { return (fromFahrenheit - 32.0) / 1.8; };
-  float computeDewPoint(float temperature, float percentHumidity, bool isFahrenheit=false);
-  float computeAbsoluteHumidity(float temperature, float percentHumidity, bool isFahrenheit=false);
+  float computeDewPoint(float temperature, float percentHumidity);
+  float computeAbsoluteHumidity(float temperature, float percentHumidity);
 
 
 private:
