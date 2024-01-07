@@ -177,7 +177,7 @@ public:
    * @n When the ADR is connected to VDD, the chip IIC address is 0x45.
    * @n When the ADR is connected to GND, the chip IIC address is 0x44.
    */
-  DFRobot_SHT3x(TwoWire *pWire = &Wire, uint8_t address = 0x45,uint8_t RST = 0);
+  DFRobot_SHT3x(TwoWire *pWire = &Wire, uint8_t address = 0x45,uint8_t RST = 0xFF);
   
   /**
    * @fn readSerialNumber

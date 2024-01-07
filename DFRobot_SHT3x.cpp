@@ -18,7 +18,7 @@ DFRobot_SHT3x::DFRobot_SHT3x(TwoWire *pWire, uint8_t address,uint8_t RST)
   _address = address;
   _RST = RST;
   measurementMode = eOneShot;
-  if (_RST){
+  if (_RST != 0xFF){
 	pinMode(_RST,OUTPUT);
 	digitalWrite(_RST,HIGH);
   }
@@ -67,7 +67,7 @@ bool DFRobot_SHT3x::softReset()
 
 bool DFRobot_SHT3x::pinReset()
 {
-  if (_RST == 0)
+  if (_RST == 0xFF)
 	return false;
   sStatusRegister_t registerRaw;
   clearStatusRegister();
